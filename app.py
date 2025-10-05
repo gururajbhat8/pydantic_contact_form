@@ -5,6 +5,8 @@ import os
 #import models
 import sys
 from models import Contact
+from utils import save_to_excel
+
 
 st.title("Contact Form Validator")
 with st.form(key='contact_form'):
@@ -21,10 +23,24 @@ if submitted:
             name = name,
             email = email,
             age = age,
-            phone = phone
+            phone_number = phone
         )
 
+        save_to_excel(user)
+
         st.success("Submitted succesfully")
+        st.write("**Submitted Data**")
+        st.write(f"- Name: {user.name}")
+        st.write(f"- Email: {user.email}")
+        st.write(f"- Age: {user.age}")
+        st.write(f"- Phone: {user.phone_number}")
 
     except ValidationError as e:
-        st.error(e)
+        st.error("Validation Error")
+        for error in e.errors():
+            field = error['loc'][0]
+            message = error['msg']
+            st.error(f"**{field}**: {message}")
+
+    except Exception as e:
+        st.error(f"Unexpected Error : {str(e)}")
